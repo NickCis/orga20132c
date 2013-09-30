@@ -10,4 +10,4 @@ tp0: main.o arg_parse.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
-	$(RM) *.o tp0
+	- $(RM) *.o tp0

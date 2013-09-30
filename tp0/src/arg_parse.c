@@ -36,7 +36,7 @@ int ParseArg_addArg(TParseArg* this, TParseArgFunc func, char corto, char* largo
 
 	this->args[this->c].func = func;
 	this->args[this->c].nombre_corto = corto;
-	this->args[this->c].nombre_largo = strcpy((char*) calloc(sizeof(largo)+1, sizeof(char)), largo);
+	this->args[this->c].nombre_largo = strcpy((char*) calloc(strlen(largo)+1, sizeof(char)), largo);
 	if(tam && defecto){
 		this->args[this->c].def = calloc(1, tam);
 		memcpy(this->args[this->c].def, defecto, tam);
@@ -94,7 +94,7 @@ int ParseArg_parse(TParseArg* this, int argc, char* argv[]){
 
 			if(i+1 < argc){
 				i++;
-				arg->buf = strcpy((char*) calloc(sizeof(argv[i])+1, sizeof(char)), argv[i]);
+				arg->buf = strcpy((char*) calloc(strlen(argv[i])+1, sizeof(char)), argv[i]);
 			}
 		}
 	}
@@ -116,6 +116,9 @@ void* ParseArg_getArg(TParseArg* this, char corto){
 		if(arg->func == NULL){
 			return (void*) 1;
 		}
+
+		if(arg->buf == NULL)
+			return NULL;
 
 		return arg->func(arg->buf);
 	}
@@ -144,6 +147,6 @@ int ParseArg_delete(TParseArg* this){
 }
 
 void *ParseArg_parseStr(char* str){
-	return strcpy((char*) calloc(sizeof(str)+1, sizeof(char)), str);
+	return strcpy((char*) calloc(strlen(str)+1, sizeof(char)), str);
 }
 
