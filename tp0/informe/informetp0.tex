@@ -1,0 +1,157 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definición del tipo de documento.                                           %
+% Posibles tipos de papel: a4paper, letterpaper, legalpapper                  %
+% Posibles tamaños de letra: 10pt, 11pt, 12pt                                 %
+% Posibles clases de documentos: article, report, book, slides                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[a4paper,10pt]{article}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Los paquetes permiten ampliar las capacidades de LaTeX.                     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Paquete para inclusión de gráficos.
+\usepackage{graphicx}
+% \end{lstlisting}
+
+% Paquete para control de la flotabilidad de las imagenes
+\usepackage{float}
+% Paquete para definir la codificación del conjunto de caracteres usado
+% (latin1 es ISO 8859-1).
+\usepackage[latin1]{inputenc}
+
+% Paquete para definir el idioma usado.
+\usepackage[spanish,activeacute]{babel}
+
+% Paquetes para manejar lenguajes
+\usepackage{listings,multicol}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%DECLARACIONES%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstdefinestyle{BashInputStyle}{
+  language=bash,
+  basicstyle=\small\sffamily,
+  numbers=left,
+  numberstyle=\tiny,
+  numbersep=3pt,
+%    frame=tb, %DESCOMENTAR PARA PONERLE LINEAS ARRIBA Y ABAJO
+  columns=fullflexible,
+  linewidth=0.9\linewidth,
+  xleftmargin=0.1\linewidth
+}% \end{lstlisting}
+
+\newcommand*{\Package}[1]{\texttt{#1}}%
+
+\lstdefinestyle{customasm}{
+    belowcaptionskip=1\baselineskip,
+  frame=L,
+  xleftmargin=\parindent,
+  language=[x86masm]Assembler,
+  basicstyle=\scriptsize\ttfamily,
+  commentstyle=\itshape\color{purple!40!black},
+}	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%FIN DECLARACIONES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Título principal del documento.
+\title{		\textbf{Trabajo pr'actico 0}}
+
+% Información sobre los autores.
+\author{	Nicolas Cisco, \textit{Padrón Nro. 94.XXX}                     \\
+            \texttt{ ncis20@gmail.com }                                              \\
+            Rodrigo Burdet, \textit{Padrón Nro. 93.440}                     \\
+            \texttt{ rodrigoburdet@gmail.com }                                              \\
+	    Nicolas Calvo, \textit{Padrón Nro. 00.000}                     \\
+            \texttt{ dirección de e-mail }                                              \\[2.5ex]
+            \normalsize{Grupo Nro. QUEGRUPOSOMOS? - 2do. Cuatrimestre de 2013}                       \\
+            \normalsize{66.20 Organización de Computadoras}                             \\
+            \normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}            \\
+       }
+\date{}
+
+
+
+\begin{document}
+
+% Inserta el título.
+\maketitle
+
+% Quita el número en la primer página.
+\thispagestyle{empty}
+
+% Resumen
+\begin{abstract}
+Este trabajo pr'actico sirve como introducci'on a las herramientas b'asicas que se usar'an m'as adelante. El programa escrito en C genera una imagen de un tablero de ajedrez seg'un los argumentos que sean pasados.
+El formato gr'afico a utilizar fue PGM o \textit{portable grey map}.
+\end{abstract}
+
+
+\section{Introducción}
+
+El formato gr'afico PGM sirve para describir im'agenes digitales monocrom'aticas. Siendo un tablero de ajedrez un claro ejemplo de una imagen monocrom'atica se busca dibujar uno de dimensiones especificadas a trav'es de argumentos ingresador por consola. La salida del programa contiene el tablero en formato PGM.
+El programa (que fue hecho en {\bf ANSI C}) fue emulado en una m'aquina MIPS32 y habiendo pasado los casos de prueba se obtuvo el c'odigo assembly generado por el compilador {\bf GCC}
+
+\section{Desarrollo}
+
+El trabajo pr'actico fue dividido en dos secciones: 
+\begin{itemize}
+ \item Parser de argumentos (TDA)
+ \item Main
+\end{itemize}
+
+\subsection{Parser}
+Para crear el TDA parseador de argumentos se le pasa la cantidad m'axima de argumentos que el programa puede llegar a recibir, internamente se guarda un vector de estructuras \emph{TArg}. Cada uno de estos \emph{TArg} es un posible argumento, esta estructura guarda una funci'on parseadora de char* provenientes de argv a un valor, un char representando el nombre corto (e.g: o de -o), un char* representando el nombre largo (e.g: output de --output), un void* representando un puntero a un valor por defecto, y dos valores que se asignan despu'es de parsear argv (si es que se realiza alg'un match), un entero para saber si se encontr'o el valor y otro char* correspondiente al string del argv que se us'o como argumento (e.g: -o output.pgm, se guardar'a output.pgm).
+En el .h se describe que hacen las primitivas, a modo de resumen, se carga el array de argumentos usando \textit{ParseArg\_addArg}. Despues, se llama a \textit{ParseArg\_parse(argc, argv)} que recorre el vector argv buscando los par'ametros. Para obtener el valor de un argumento, se llama a \textit{ParseArg\_getArg(nombre\_corto)} siendo nombre corto  un char, esto devuelve un puntero al dato o null, internamente, se busc'o en el vector de \textit{TArg} aquel con nombre corto igual al pasado por argumento .Si \textit{arg $\rightarrow$ encontre == 0}, se devuelve el valor por defecto, sino, si \textit{arg $\rightarrow$ func == NULL} se devuelve un 1 casteado a void*, si \textit{arg $\rightarrow$buf == NULL} se devuelve NULL, sino, se devuelve \textit{arg $\rightarrow$func(arg$\rightarrow$buf)} (buf siempre es una cadena de caracteres finalizada en 0).
+
+\subsection{Main}
+Para imprimir la matriz, primero se imprime la cabecera, y dsp se usan 4 ciclos while.
+El primero es para la cantidad de filas (siempre van a ser 8), el segundo es para la repetici'on de filas (\textit{c\_h} siempre es un entero, por ser divisi'on de enteros, como \textit{c\_h = pixeles\_altura / 8}, si \textit{pixeles\_altura} = 8, solo se repetir'a una vez cada linea, si \textit{pixeles\_altura} =16, 2, y asi sucecivamente), el siguiente while es para la cantidad de columnas, \textit{c\_w} es lo mismo que \textit{c\_h}, solo qe para el ancho. Se usa la variable uno para ir alternando fila a fila si se empieza con 1 o 0, se usa \emph{j mod 2} para cambiar el n'umero qe se imprime columna a columna.
+
+
+\section{Pruebas}
+
+En la figura~\ref{fig001} se muestra el archivo {\bf file.pmg} cuando se llama al programa :
+\begin{lstlisting}[style=BashInputStyle]
+    $./tp0 -r 800x600 -o file.pgm
+\end{lstlisting}
+
+
+% Inclusión de una imagen en formato EPS (Encapsulated Postscript).
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=0.5\textwidth]{file}
+\end{center}
+\caption{file.pgm (800x600)} \label{fig001}
+\end{figure}
+
+\section{C'odigo}
+\twocolumn
+% \begin{lstlisting}[numbers=left,xleftmargin=3em, multicols=2]
+\lstinputlisting[style=customasm]{main.s}
+
+
+
+\onecolumn
+
+\section{Conclusiones}
+Se presentó un modelo para que los alumnos puedan tomar como referencia en la redacción de sus informes de trabajos prácticos.
+
+
+% Citas bibliográficas.
+\begin{thebibliography}{99}
+
+\bibitem{INT06} Intel Technology \& Research, ``Hyper-Threading Technology,'' 2006, http://www.intel.com/technology/hyperthread/.
+
+\bibitem{HEN00} J. L. Hennessy and D. A. Patterson, ``Computer Architecture. A Quantitative
+Approach,'' 3ra Edición, Morgan Kaufmann Publishers, 2000.
+
+\bibitem{LAR92} J. Larus and T. Ball, ``Rewriting Executable Files to Mesure Program Behavior,'' Tech. Report 1083, Univ. of Wisconsin, 1992.
+
+\end{thebibliography}
+
+\end{document}
