@@ -51,7 +51,7 @@
   language=[x86masm]Assembler,
   basicstyle=\scriptsize\ttfamily,
   commentstyle=\itshape\color{purple!40!black},
-}	
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%FIN DECLARACIONES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,16 +61,17 @@
 \title{		\textbf{Trabajo pr'actico 0}}
 
 % Información sobre los autores.
-\author{	Nicolas Cisco, \textit{Padrón Nro. 94.XXX}                     \\
-            \texttt{ ncis20@gmail.com }                                              \\
-            Rodrigo Burdet, \textit{Padrón Nro. 93.440}                     \\
-            \texttt{ rodrigoburdet@gmail.com }                                              \\
-	    Nicolas Calvo, \textit{Padrón Nro. 00.000}                     \\
-            \texttt{ dirección de e-mail }                                              \\[2.5ex]
-            \normalsize{Grupo Nro. QUEGRUPOSOMOS? - 2do. Cuatrimestre de 2013}                       \\
-            \normalsize{66.20 Organización de Computadoras}                             \\
-            \normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}            \\
-       }
+\author{
+	Nicolas Cisco, \textit{Padrón Nro. 94.173}                     \\
+		\texttt{ ncis20@gmail.com }                                              \\
+	Rodrigo Burdet, \textit{Padrón Nro. 93.440}                     \\
+		\texttt{ rodrigoburdet@gmail.com }                                              \\
+	Nicolas Calvo, \textit{Padrón Nro. 00.000}                     \\
+		\texttt{ nicolas.g.calvo@gmail.com }                                              \\[2.5ex]
+	\normalsize{Grupo Nro.  - 2do. Cuatrimestre de 2013}                       \\
+	\normalsize{66.20 Organización de Computadoras}                             \\
+	\normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}            \\
+}
 \date{}
 
 
@@ -113,12 +114,87 @@ El primero es para la cantidad de filas (siempre van a ser 8), el segundo es par
 
 
 \section{Pruebas}
+Prueba de impres'ion de mensaje de ayuda:
+\begin{lstlisting}[style=BashInputStyle]
+$ ./tp0 -h
+Usage:
+        ./tp0 -h
+        ./tp0 -V
+        ./tp0 [options]
+Options:
+        -V, --version           Print version and quit.
+        -h, --help              Print this information.
+        -r, --resolution        Set bitmap resolution to WxH pixels.
+        -o, --output            Path to output file.
+Examples:
+        ./tp0 -o output.pgm
+        ./tp0 -r 800x600 -o file.pgm
+\end{lstlisting}
+
+Primer ejemplo con salida por por stdout:
+\begin{lstlisting}[style=BashInputStyle]
+$ ./tp0 -r 8x8 -o -
+P2
+8
+8
+1
+1 0 1 0 1 0 1 0
+0 1 0 1 0 1 0 1
+1 0 1 0 1 0 1 0
+0 1 0 1 0 1 0 1
+1 0 1 0 1 0 1 0
+0 1 0 1 0 1 0 1
+1 0 1 0 1 0 1 0
+0 1 0 1 0 1 0 1
+\end{lstlisting}
+
+Segundo ejemplo con salida por por stdout:
+\begin{lstlisting}[style=BashInputStyle]
+$ ./tp0 -r 16x8 -o -
+P2
+16
+8
+1
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+\end{lstlisting}
+
+Ejemplo guardando resultado en archivo:
+\begin{lstlisting}[style=BashInputStyle]
+$ ./tp0 -r 16x16 -o /tmp/test
+$ cat /tmp/test
+P2
+16
+16
+1
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+0 0 1 1 0 0 1 1 0 0 1 1 0 0 1 1
+\end{lstlisting}
 
 En la figura~\ref{fig001} se muestra el archivo {\bf file.pmg} cuando se llama al programa :
 \begin{lstlisting}[style=BashInputStyle]
     $./tp0 -r 800x600 -o file.pgm
 \end{lstlisting}
-
 
 % Inclusión de una imagen en formato EPS (Encapsulated Postscript).
 
@@ -129,10 +205,10 @@ En la figura~\ref{fig001} se muestra el archivo {\bf file.pmg} cuando se llama a
 \caption{file.pgm (800x600)} \label{fig001}
 \end{figure}
 
-\section{C'odigo}
-\twocolumn
-% \begin{lstlisting}[numbers=left,xleftmargin=3em, multicols=2]
-\lstinputlisting[style=customasm]{main.s}
+%\section{C'odigo}
+%\twocolumn
+%% \begin{lstlisting}[numbers=left,xleftmargin=3em, multicols=2]
+%\lstinputlisting[style=customasm]{main.s}
 
 
 

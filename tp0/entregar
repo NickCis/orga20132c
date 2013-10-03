@@ -1,0 +1,42 @@
+#! /bin/bash
+rmdir entrega
+echo "Creando carpeta de entrega"
+mkdir entrega
+
+ARCHIVOS_CODIGO="arg_parse.s main.s src/*.{c,h} src/Makefile"
+
+echo "Compilando latex"
+if  which rubber &> /dev/null ; then
+	rubber --inplace --pdf informe/informetp0.tex
+else
+	if which pdflatex &> /dev/null ; then
+		cd informe
+		pdflatex ./informetp0.tex &> /dev/null
+		rm informetp0.log
+		cd ../
+	else
+		echo "No hay compilador de latex"
+		exit 1
+	fi
+fi
+
+mv informe/informetp0.pdf entrega/informe.pdf
+
+echo "[Ok]"
+
+echo "Copiando codigo fuente"
+mkdir entrega/src
+cp src/*.{h,c} entrega/src/
+cp src/Makefile entrega/src/
+
+echo "[Ok]"
+
+if which a2ps &> /dev/null ; then
+	a2ps -A fill --toc $ARCHIVOS_CODIGO -o entrega/codigo.pdf
+else
+	echo "[ERROR] No se puede generar pdf con codigo"
+	exit 1
+fi
+
+
+
