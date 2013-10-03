@@ -31,9 +31,11 @@ fi
 echo "[Ok]"
 
 echo "Copiando codigo fuente"
-mkdir entrega/src
-cp src/*.{h,c} entrega/src/
-cp src/Makefile entrega/src/
+
+if ! cp --parents $ARCHIVOS_CODIGO entrega/ ; then
+	echo "[ERROR]"
+	exit 1
+fi
 
 echo "[Ok]"
 
