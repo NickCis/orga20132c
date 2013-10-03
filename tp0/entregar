@@ -1,18 +1,19 @@
 #! /bin/bash
-rmdir entrega
-echo "Creando carpeta de entrega"
-mkdir entrega
+NOMBRE_ZIP="tp0.zip"
+NOMBRE_LATEX="informetp0"
+ARCHIVOS_CODIGO=$(echo "arg_parse.s main.s src/Makefile " src/*.{c,h})
+ENUNCIADO="6620-2c2013-tp0.pdf"
 
-ARCHIVOS_CODIGO="arg_parse.s main.s src/*.{c,h} src/Makefile"
+rm -rf entrega
+mkdir entrega
 
 echo "Compilando latex"
 if  which rubber &> /dev/null ; then
-	rubber --inplace --pdf informe/informetp0.tex
+	rubber --inplace --pdf informe/$NOMBRE_LATEX.tex &> /dev/null
 else
 	if which pdflatex &> /dev/null ; then
 		cd informe
-		pdflatex ./informetp0.tex &> /dev/null
-		rm informetp0.log
+		pdflatex $NOMBRE_LATEX.tex &> /dev/null
 		cd ../
 	else
 		echo "No hay compilador de latex"
@@ -20,7 +21,12 @@ else
 	fi
 fi
 
-mv informe/informetp0.pdf entrega/informe.pdf
+rm -f informe/$NOMBRE_LATEX.log informe/$NOMBRE_LATEX.aux
+
+if ! mv informe/$NOMBRE_LATEX.pdf entrega/informe.pdf ; then
+	echo "[ERROR]"
+	exit 1
+fi
 
 echo "[Ok]"
 
@@ -32,11 +38,38 @@ cp src/Makefile entrega/src/
 echo "[Ok]"
 
 if which a2ps &> /dev/null ; then
-	a2ps -A fill --toc $ARCHIVOS_CODIGO -o entrega/codigo.pdf
+	if ! which ps2pdf &> /dev/null; then
+		echo "[ERROR] No se tiene el programa ps2pdf"
+		exit 1
+	fi
+
+	a2ps -A fill --toc $ARCHIVOS_CODIGO -o entrega/codigo.ps &> /dev/null
+	ps2pdf entrega/codigo.ps entrega/codigo.pdf
+	rm entrega/codigo.ps
+
 else
 	echo "[ERROR] No se puede generar pdf con codigo"
 	exit 1
 fi
 
+echo "Agregando enunciado"
+if ! cp $ENUNCIADO entrega ; then
+	echo "[ERROR]"
+	exit 1
+fi
 
+echo "Creando zip $NOMBRE_ZIP"
 
+rm $NOMBRE_ZIP -f
+cd entrega
+zip ../$NOMBRE_ZIP -r ./* &> /dev/null
+if [ $? -ne 0 ] ; then
+	echo "[ERROR] Creando zip"
+	exit 1
+fi
+
+cd ../
+
+rm -rf entrega
+
+exit 0
