@@ -24,7 +24,7 @@ LD = $(CC)
 # # REGLAS
 # #########
 #
-.PHONY: all clean
+.PHONY: all clean assembly
 #
 all: $(target)
 o_files = $(patsubst %.$(extension),%.o,$(fuentes))
@@ -39,4 +39,11 @@ $(target): $(o_files)
 clean:
 	$(RM) $(o_files) $(o_files:.o=.deps) $(target)
 
+#assembly:
+assembly: main.o arg_parse.o bubblesort.o
+	gcc -c assembly/heapify.S -o heapify.o
+	gcc -c assembly/heapsort.S -o heapsort.o
+	gcc -c assembly/strcasecmp_n.c -o strcasecmp_n.o
+	gcc main.o arg_parse.o bubblesort.o strcasecmp_n.o heapsort.o heapify.o -o tp1
+	#gcc  pepe.c  heapsort.o heapify.o -o pepe
 

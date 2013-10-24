@@ -4,6 +4,6 @@
 #include <stdio.h>
 #include <strings.h>
 
-void heapsort(char** words, int size);
+void heapsort_n(char** words, int size);
 
 #endif
