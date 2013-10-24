@@ -5,13 +5,13 @@
 
 .text
 .align 2
-.globl heapsort
+.globl heapsort_n
 .extern heapify
 
 # t1 = **array
 # t2 = size
 
-heapsort: subu sp,sp, 64 # ra,sp,fp,s0,..,s7, arg building 
+heapsort_n: subu sp,sp, 64 # ra,sp,fp,s0,..,s7, arg building 
 		sw ra,56(sp)
 		sw $fp,52(sp)
 		sw gp,48(sp)

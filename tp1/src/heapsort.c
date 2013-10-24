@@ -2,7 +2,7 @@
 
 void heapify(char** array, int size, int dsd);
 
-void heapsort(char** array, int size){
+void heapsort_n(char** array, int size){
 	int i=0;
 
 	for(i=0; i<size; i++){

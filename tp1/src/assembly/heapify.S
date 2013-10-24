@@ -67,7 +67,7 @@ cloop2: # Comparar strings saltar solo si array+parent < array+j
 		add t1, s5, t1 # array+j
 		lw a1, 0(t1)
 
-		la t1, strcmp # Cargo referencia de strcmp en t1
+		la t1, strcasecmp # Cargo referencia de strcasecmp en t1
 		jal ra, t1 # llamo a strcmp
 
 		blt v0, zero, inloop2 
