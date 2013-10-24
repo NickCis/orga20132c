@@ -111,7 +111,7 @@ char* getData(char* nombreArchivo){
 	FILE *fp = stdin;
 	if (strcmp(nombreArchivo,"")!=0){
 		if ( !(fp = fopen(nombreArchivo,"r")) )
-			fprintf(stderr,"Vea la ayuda para ver como ejecutar el programa\n");
+			fprintf(stderr,"No se puede abrir el archivo %s\n",nombreArchivo);
 		exit (1);
 	}
 	fseek(fp,0L,SEEK_END);
