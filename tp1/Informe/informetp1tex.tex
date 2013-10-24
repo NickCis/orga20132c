@@ -1,0 +1,150 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definición del tipo de documento.                                           %
+% Posibles tipos de papel: a4paper, letterpaper, legalpapper                  %
+% Posibles tamaños de letra: 10pt, 11pt, 12pt                                 %
+% Posibles clases de documentos: article, report, book, slides                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[a4paper,10pt]{article}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Los paquetes permiten ampliar las capacidades de LaTeX.                     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Paquete para inclusión de gráficos.
+\usepackage{graphicx}
+% \end{lstlisting}
+
+% Paquete para control de la flotabilidad de las imagenes
+\usepackage{float}
+% Paquete para definir la codificación del conjunto de caracteres usado
+% (latin1 es ISO 8859-1).
+\usepackage[latin1]{inputenc}
+
+% Paquete para definir el idioma usado.
+\usepackage[spanish,activeacute]{babel}
+
+% Paquetes para manejar lenguajes
+\usepackage{listings,multicol}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%DECLARACIONES%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstdefinestyle{BashInputStyle}{
+  language=bash,
+  basicstyle=\small\sffamily,
+  numbers=left,
+  numberstyle=\tiny,
+  numbersep=3pt,
+%    frame=tb, %DESCOMENTAR PARA PONERLE LINEAS ARRIBA Y ABAJO
+  columns=fullflexible,
+  linewidth=0.9\linewidth,
+  xleftmargin=0.1\linewidth
+}% \end{lstlisting}
+
+\newcommand*{\Package}[1]{\texttt{#1}}%
+
+\lstdefinestyle{customasm}{
+    belowcaptionskip=1\baselineskip,
+  frame=L,
+  xleftmargin=\parindent,
+  language=[x86masm]Assembler,
+  basicstyle=\scriptsize\ttfamily,
+  commentstyle=\itshape\color{purple!40!black},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%FIN DECLARACIONES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Título principal del documento.
+\title{		\textbf{Trabajo pr'actico 0}}
+
+% Información sobre los autores.
+\author{
+	Nicolas Cisco, \textit{Padrón Nro. 94.173}                     \\
+		\texttt{ ncis20@gmail.com }                                              \\
+	Rodrigo Burdet, \textit{Padrón Nro. 93.440}                     \\
+		\texttt{ rodrigoburdet@gmail.com }                                              \\
+	Nicolas Calvo, \textit{Padrón Nro. 78.914}                     \\
+		\texttt{ nicolas.g.calvo@gmail.com }                                              \\[2.5ex]
+	\normalsize{Grupo Nro.  - 2do. Cuatrimestre de 2013}                       \\
+	\normalsize{66.20 Organización de Computadoras}                             \\
+	\normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}            \\
+}
+\date{}
+
+
+
+\begin{document}
+
+% Inserta el título.
+\maketitle
+
+% Quita el número en la primer página.
+\thispagestyle{empty}
+
+% Resumen
+\begin{abstract}
+En el presente se comparan dos algoritmos de ordenamiento: \textit{Bubblesort} vs \textit{Heapsort}. Bubblesort fue solo implementado en C mientras que Heapsort fue hecho en MIPS32 y en C. El par'ametro de comparaci'on es el tiempo de ordenamiento de archivos de texto. 
+Todos los archivos y códigos fuente aquí mencionados, así como también el presente informe, pueden ser descargados del repositorio de trabajo \footnote{URL del Repositorio: \url{https://github.com/NickCis/orga20132c/tree/master/tp1}}.
+\bigskip
+\end{abstract}
+
+
+\section{Introducción}
+El ordenamiento por montículos (heapsort en inglés) es un algoritmo de ordenamiento no recursivo, no estable, con complejidad computacional \Theta(n\log n). Este algoritmo consiste en almacenar todos los elementos del vector a ordenar en un montículo (heap), y luego extraer el nodo que queda como nodo raíz del montículo (cima) en sucesivas iteraciones obteniendo el conjunto ordenado. Basa su funcionamiento en una propiedad de los montículos, por la cual, la cima contiene siempre el menor elemento (o el mayor, según se haya definido el montículo) de todos los almacenados en él.
+La Ordenación de burbuja (Bubble Sort en inglés) es un sencillo algoritmo de ordenamiento. Funciona revisando cada elemento de la lista que va a ser ordenada con el siguiente, intercambiándolos de posición si están en el orden equivocado. Es necesario revisar varias veces toda la lista hasta que no se necesiten más intercambios, lo cual significa que la lista está ordenada. Este algoritmo obtiene su nombre de la forma con la que suben por la lista los elementos durante los intercambios, como si fueran pequeñas "burbujas". También es conocido como el método del intercambio directo. Dado que solo usa comparaciones para operar elementos, se lo considera un algoritmo de comparación, siendo el más sencillo de implementar.
+Éste algoritmo es esencialmente un algoritmo de fuerza bruta lógica siendo su complejidad algor'imica de \Theta(n^2).
+
+\section{Compilaci'on}
+Para compilar el programa se uso un \textit{make} que ser'a presentado en el ap'endice para automatizar el proceso. Se opt'o por usar el standard 99 \textit{std99}\cite{std99} trantando a los warnings como errores y sin usar optimizaciones {\bf -O0}.
+A saber: 
+\begin{itemize}
+ \item Antes de cada ejecuci'on hacer : {\bf make clean}
+ \item Para compilar el c'odigo assembly se puede hacer: {\bf make assembly}
+ \item Para compilar el codigo en C se puede hacer: {\bf make}
+\end{itemize}
+
+
+\section{Programa}
+El programa consta de 3 secciones:
+\begin{itemize}
+ \item Parser de argumentos (TDA)
+ \item M'etodos de ordenamiento
+ \begin{itemize}
+  \item Bubblesort
+  \item Heapsort
+ \end{itemize}
+ \item Main
+\end{itemize}
+
+Cada una de ellas sera explicada a continuaci'on:
+
+\section{Desarrollo}
+
+El trabajo pr'actico fue dividido en dos secciones: 
+
+\subsection{Parser}
+Para crear el TDA parseador de argumentos se le pasa la cantidad m'axima de argumentos que el programa puede llegar a recibir, internamente se guarda un vector de estructuras \emph{TArg}. Cada uno de estos \emph{TArg} es un posible argumento, esta estructura guarda una funci'on parseadora de char* provenientes de argv a un valor, un char representando el nombre corto (e.g: o de -o), un char* representando el nombre largo (e.g: output de --output), un void* representando un puntero a un valor por defecto, y dos valores que se asignan despu'es de parsear argv (si es que se realiza alg'un match), un entero para saber si se encontr'o el valor y otro char* correspondiente al string del argv que se us'o como argumento (e.g: -o output.pgm, se guardar'a output.pgm).
+En el .h se describe que hacen las primitivas, a modo de resumen, se carga el array de argumentos usando \textit{ParseArg\_addArg}. Despues, se llama a \textit{ParseArg\_parse(argc, argv)} que recorre el vector argv buscando los par'ametros. Para obtener el valor de un argumento, se llama a \textit{ParseArg\_getArg(nombre\_corto)} siendo nombre corto  un char, esto devuelve un puntero al dato o null, internamente, se busc'o en el vector de \textit{TArg} aquel con nombre corto igual al pasado por argumento .Si \textit{arg $\rightarrow$ encontre == 0}, se devuelve el valor por defecto, sino, si \textit{arg $\rightarrow$ func == NULL} se devuelve un 1 casteado a void*, si \textit{arg $\rightarrow$buf == NULL} se devuelve NULL, sino, se devuelve \textit{arg $\rightarrow$func(arg$\rightarrow$buf)} (buf siempre es una cadena de caracteres finalizada en 0).
+
+\subsection{Main}
+El main consta de todas las funciones auxiliares que son necesarias para los ordenadores. Estos necesitan una lista de palabras que ser'an provistas por \textit{fillWords}. A su vez, esta, necesita todas las palabras del archivo en un solo buffer, tarea de \textit{getData}.
+
+\subsection{M'etodos de ordenamiento}
+%%%%%%%%%%%
+%%%%%%%%%%%%%
+%%%%%%%%%%%%%
+%%%%%%%%%%%%%////////////////??HACERRRRRRRRRRRRRRRRRRRRRRRRRRR
+
+
+\section{Pruebas}
+
+\section{Conclusiones}
+
+\section{thebibliography}{99}
+  \bibitem{STD99} C99 Standard, \url{http://en.wikipedia.org/wiki/C99}
+
+
+\end{document}
