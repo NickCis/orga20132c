@@ -39,4 +39,8 @@ $(target): $(o_files)
 clean:
 	$(RM) $(o_files) $(o_files:.o=.deps) $(target)
 
+assembly: main.o arg_parse.o bubblesort.o
+	gcc -c assembly/heapify.S -o heapify.o
+	gcc -c assembly/heapsort.S -o heapsort.o
+	gcc main.o arg_parse.o bubblesort.o heapsort.o heapify.o -o tp1
 
