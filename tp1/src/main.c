@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 
 #include "arg_parse.h"
@@ -15,6 +16,7 @@ void version(char* nombre);
 void ordenarArchivo(char* nombreArchivo,int modo);
 char* getData(char* nombreArchivo);
 void fillWords(char* contenido,char*** palabras,int* size);
+void imprimir(char** word, int size);
 
 int main(int argc, char* argv[]){
 	TParseArg* args;
@@ -44,6 +46,10 @@ int main(int argc, char* argv[]){
 			int i;
 			for ( i=2 ; i<argc ; i++)
 				ordenarArchivo(argv[i],modo);
+		}else if (argc == 2){
+			ordenarArchivo("",modo);
+		}else{
+			fprintf(stderr,"Vea la ayuda para ver como ejecutar el programa\n");
 		}
 	}
 
@@ -96,13 +102,18 @@ void ordenarArchivo(char* nombreArchivo, int modo){
 			heapsort(palabras,size);
 			break;
 	}
+	imprimir(palabras,size);
 }
 
 char* getData(char* nombreArchivo){
-	FILE *fp;
 	char* buffer;
 	int size;
-	fp = fopen(nombreArchivo,"r");
+	FILE *fp = stdin;
+	if (strcmp(nombreArchivo,"")!=0){
+		if ( !(fp = fopen(nombreArchivo,"r")) )
+			fprintf(stderr,"Vea la ayuda para ver como ejecutar el programa\n");
+		exit (1);
+	}
 	fseek(fp,0L,SEEK_END);
 	size = ftell(fp);
 	fseek(fp,0L,0);
@@ -139,4 +150,11 @@ void fillWords(char* contenido,char*** palabras,int* size){
 			k=0;
 		}
 	}
+}
+
+void imprimir(char** word, int size){
+	int i;
+	for (i = 0 ; i < size; i++)
+		printf("%s\n",word[i]);
+
 }

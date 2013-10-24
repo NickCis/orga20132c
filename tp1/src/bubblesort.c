@@ -12,8 +12,5 @@ void bubblesort(char** word, int size){
 			}
 		}
 	}
-	printf("IMPRIMIENDO CON BUBBLE\n");
-	for (i = 0 ; i < size; i++)
-		printf("%s\n",word[i]);
 }
 
