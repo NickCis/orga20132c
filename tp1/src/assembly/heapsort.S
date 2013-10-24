@@ -3,18 +3,12 @@
 .text
 .align 2
 .globl heapsort_n
-.ent heapsort_n
 .extern heapify
 
 # t1 = **array
 # t2 = size
 
 heapsort_n:
-		.frame $fp, 64, ra
-		.set    noreorder
-		.cpload t9
-		.set    reorder
-
 		subu sp,sp, 64 # ra,sp,fp,s0,..,s7, arg building 
 		sw ra,56(sp)
 		sw $fp,52(sp)
@@ -46,8 +40,9 @@ loop: blt s0, s7, inloop # i < size
 		j fin
 
 inloop: lw a0, 0(s6)
-		lw a1, 0(s7)
-		lw a3, 0(s0)
+		add a0, zero, s6
+		add a1, zero, s7
+		add a2, zero, s0
 		jal heapify
 		addi s0, s0, 1 # i++
 		j loop
@@ -69,6 +64,3 @@ fin: move sp, $fp
 
 		addiu sp, sp, 64
 		jr ra
-
-
-.end heapsort_n
