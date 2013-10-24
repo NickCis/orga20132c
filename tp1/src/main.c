@@ -133,7 +133,7 @@ char* getData(char* nombreArchivo){
 	while( !feof(fp)){
 		int read = 0;
 		size += STDIN_BUF_INC;
-		buffer = (char*) realloc((void*) buffer, STDIN_BUF_INC);
+		buffer = (char*) realloc((void*) buffer, size);
 		read = fread(buffer+read_size, 1, STDIN_BUF_INC, fp);
 		read_size += read;
 		buffer[read_size] = 0;
