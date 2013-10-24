@@ -1,17 +1,21 @@
-#ifndef USE_MIPS_ASSEMBLY
-#define USE_MIPS_ASSEMBLY
 #include <mips/regdef.h>
-#include <sys/syscall.h>
 
 .text
 .align 2
 .globl heapsort_n
+.ent heapsort_n
 .extern heapify
 
 # t1 = **array
 # t2 = size
 
-heapsort_n: subu sp,sp, 64 # ra,sp,fp,s0,..,s7, arg building 
+heapsort_n:
+		.frame $fp, 64, ra
+		.set    noreorder
+		.cpload t9
+		.set    reorder
+
+		subu sp,sp, 64 # ra,sp,fp,s0,..,s7, arg building 
 		sw ra,56(sp)
 		sw $fp,52(sp)
 		sw gp,48(sp)
@@ -65,4 +69,6 @@ fin: move sp, $fp
 
 		addiu sp, sp, 64
 		jr ra
-#endif
+
+
+.end heapsort_n

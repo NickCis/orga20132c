@@ -1,17 +1,21 @@
-#ifndef USE_MIPS_ASSEMBLY
-#define USE_MIPS_ASSEMBLY
 #include <mips/regdef.h>
-#include <sys/syscall.h>
 
 .text
 .align 2
 .globl heapify
+.ent heapify
 
 # t1 = **array
 # t2 = size
 # t2 = dsd
 
-heapify: subu sp,sp,64
+heapify: 
+		.frame $fp, 64, ra
+		.set    noreorder
+		.cpload t9
+		.set    reorder
+
+		subu sp,sp,64
 		sw ra,56(sp)
 		sw $fp,52(sp)
 		sw gp,48(sp)
@@ -58,12 +62,12 @@ loop2: bge s1, s7, cloop2 # si parent >= dsd
 
 cloop2: # Comparar strings saltar solo si array+parent < array+j
 		li t1, 4 # El desplazamiento siempre tiene que estar multiplicado por 4
-		mult t1, t1, s1 # parent
+		mul t1, t1, s1 # parent
 		add t1, s5, t1 # array+parent
 		lw a0, 0(t1)
 
 		li t1, 4
-		mult t1, t1, s2 # j
+		mul t1, t1, s2 # j
 		add t1, s5, t1 # array+j
 		lw a1, 0(t1)
 
@@ -76,17 +80,17 @@ cloop2: # Comparar strings saltar solo si array+parent < array+j
 inloop2:
 		#HAGO SWAP
 		li t1, 4 # El desplazamiento siempre tiene que estar multiplicado por 4
-		mult t1, t1, s1 # parent
+		mul t1, t1, s1 # parent
 		add t1, s5, t1 # array+parent
 		lw t2, 0(t1) # aux = array[parent]
 
 		li t3, 4 # El desplazamiento siempre tiene que estar multiplicado por 4
-		mult t3, t3, s2 # j
+		mul t3, t3, s2 # j
 		add t3, s5, t3 # array+j
 		lw t4, 0(t3)
 
-		sw t1, t4 # array[parent] = array[j]
-		sw t3, t2 # array[j] = aux
+		sw t1, 0(t4) # array[parent] = array[j]
+		sw t3, 0(t2) # array[j] = aux
 		## fin swap
 
 		add s2, zero, s1 # j = parent
@@ -117,4 +121,5 @@ fin:		move sp, $fp
 
 		addiu sp, sp, 64
 		jr ra
-#endif
+
+.end heapify
