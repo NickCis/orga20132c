@@ -4,7 +4,7 @@ CFLAGS = -Wall -pedantic -pedantic-errors
 CFLAGS += -O0
 CSTD = c99
 # # Si no especifica archivos, tomo todos.
-fuentes ?= $(wildcard *.$(extension))
+#fuentes ?= $(wildcard *.$(extension))
 FLAGS += -std=$(CSTD)
 LD = $(CC)
 #
@@ -27,23 +27,22 @@ LD = $(CC)
 .PHONY: all clean assembly
 #
 all: $(target)
-o_files = $(patsubst %.$(extension),%.o,$(fuentes))
-$(target): $(o_files)
-	@if [ -z "$(o_files)" ]; \
-		then \
-		echo "No hay archivos de entrada, recuerde que la extensión debe ser '.$(extension)'."; \
-		false; \
-		fi >&2
-	$(LD) $(o_files) $(LOADLIBS) $(LDLIBS) -o $(target)
+#o_files = $(patsubst %.$(extension),%.o,$(fuentes))
+#$(target): $(o_files)
+$(target): arg_parse.o bubblesort.o heapsort.o main.o
+	#@if [ -z "$(o_files)" ]; \
+	#	then \
+	#	echo "No hay archivos de entrada, recuerde que la extensión debe ser '.$(extension)'."; \
+	#	false; \
+	#	fi >&2
+	$(LD) arg_parse.o bubblesort.o heapsort.o main.o $(LOADLIBS) $(LDLIBS) -o $(target)
 
 clean:
-	$(RM) $(o_files) $(o_files:.o=.deps) $(target)
+	$(RM) *.o $(target)
 
-#assembly:
-assembly: main.o arg_parse.o bubblesort.o
+assembly: arg_parse.o bubblesort.o main.o
 	gcc -c assembly/heapify.S -o heapify.o
 	gcc -c assembly/heapsort.S -o heapsort.o
 	gcc -c assembly/strcasecmp_n.c -o strcasecmp_n.o
-	gcc main.o arg_parse.o bubblesort.o strcasecmp_n.o heapsort.o heapify.o -o tp1
-	#gcc  pepe.c  heapsort.o heapify.o -o pepe
+	gcc main.o arg_parse.o bubblesort.o strcasecmp_n.o heapsort.o heapify.o -o $(target)
 

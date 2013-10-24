@@ -99,7 +99,7 @@ void ordenarArchivo(char* nombreArchivo, int modo){
 			bubblesort(palabras,size);
 			break;
 		case HEAP:
-			heapsort(palabras,size);
+			heapsort_n(palabras,size);
 			break;
 	}
 	imprimir(palabras,size);
