@@ -1,18 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "arg_parse.h"
 #include "bubblesort.h"
 #include "heapsort.h"
+
+#define FIXED_SIZE 30
 #define BUBBLE 1
 #define HEAP 2
 
 void usage(char* nombre);
 void version(char* nombre);
 void ordenarArchivo(char* nombreArchivo,int modo);
-void usarBubble(char* nombreArchivo);
-void usarHeap(char* nombreArchivo){}
-char* getData(char* nombreArchivo,int* size);
+char* getData(char* nombreArchivo);
+void fillWords(char* contenido,char*** palabras,int* size);
 
 int main(int argc, char* argv[]){
 	TParseArg* args;
@@ -38,16 +40,14 @@ int main(int argc, char* argv[]){
 	}
 
 	if (modo > 0){
-			ordenarArchivo("",modo);
-		if (argc > 3){
+		if (argc > 2){
 			int i;
-			for ( i=2 ; i<argc ; i++){}
-			ordenarArchivo(argv[i],modo);
+			for ( i=2 ; i<argc ; i++)
+				ordenarArchivo(argv[i],modo);
 		}
 	}
 
 	if(ParseArg_getArg(args, 'h')){
-		printf("ESTAS ACA\n");
 		usage(argv[0]);
 		ParseArg_delete(args);
 		return 0;
@@ -84,33 +84,59 @@ void usage(char* nombre){
 }
 
 void ordenarArchivo(char* nombreArchivo, int modo){
+	int size;
+	char* contenido = getData(nombreArchivo);
+	char** palabras;
+	fillWords(contenido,&palabras,&size);
 	switch (modo){
 		case BUBBLE:
-			usarBubble(nombreArchivo);
+			bubblesort(palabras,size);
 			break;
 		case HEAP:
-			usarHeap(nombreArchivo);
+			heapsort(palabras,size);
 			break;
 	}
 }
 
-char* getData(char* nombreArchivo,int* size){
+char* getData(char* nombreArchivo){
 	FILE *fp;
 	char* buffer;
+	int size;
 	fp = fopen(nombreArchivo,"r");
 	fseek(fp,0L,SEEK_END);
-	*size = ftell(fp);
+	size = ftell(fp);
 	fseek(fp,0L,0);
-	buffer = (char*)malloc((*size)*sizeof(char)+1);
-	fread(buffer,(*size),1,fp);
+	buffer = (char*)malloc((size)*sizeof(char)+1);
+	fread(buffer,size,1,fp);
 	fclose(fp);
 	return buffer;
 }
 
-void usarBubble(char* nombreArchivo){
-	int size;
-	char* contenido = getData("heapsort.h",&size);
-	printf("%s\n",contenido);
-	printf("size: %d\n",size);
-	bubblesort(&contenido,size);
+void fillWords(char* contenido,char*** palabras,int* size){
+	int i=0; /* Para moverme en el archivo que esta en la variable contenido*/
+	int j=0; /* Para agregar a la lista de palabras */
+	int k=0; /* para moverme dentro de una palabra */
+	int times=1;
+	char c;
+	char* palabra = (char*) calloc(1,sizeof(char)*FIXED_SIZE);
+	*palabras = (char**)malloc(sizeof(char**));
+	while (contenido[i]){
+		c = contenido[i];
+		i++;
+		if (!isspace(c)){
+			if (k==(times*FIXED_SIZE)){
+				times++;
+				palabra=(char*)realloc(palabra,sizeof(char)*(times*FIXED_SIZE));
+			}
+			palabra[k]=c;
+			k++;
+		}else{
+			(*palabras)[j]=palabra;
+			j++;
+			*size=j;
+			*palabras = (char**)realloc(*palabras,sizeof(char**)*(j+1));
+			palabra = (char*) calloc(1,sizeof(char)*FIXED_SIZE);
+			k=0;
+		}
+	}
 }

@@ -8,6 +8,9 @@ void heapsort(char** array, int size){
 	for(i=0; i<size; i++){
 		heapify(array, size, i);
 	}
+	printf("IMPRIMIENDO CON HEAP\n");
+	for(i=0; i<size; i++)
+		printf("%s\n",array[i]);
 }
 
 void heapify(char** array, int size, int dsd){
