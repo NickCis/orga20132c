@@ -8,6 +8,7 @@
 #include "heapsort.h"
 
 #define FIXED_SIZE 30
+#define STDIN_BUF_INC 512
 #define BUBBLE 1
 #define HEAP 2
 
@@ -111,21 +112,33 @@ void ordenarArchivo(char* nombreArchivo, int modo){
 }
 
 char* getData(char* nombreArchivo){
-	char* buffer;
-	int size;
+	char* buffer = NULL;
+	int size = 0;
+	int read_size =0;
 	FILE *fp = stdin;
 	if(nombreArchivo){
 		if ( !(fp = fopen(nombreArchivo,"r")) ){
 			fprintf(stderr,"No se puede abrir el archivo %s\n",nombreArchivo);
 			exit (1);
 		}
+		fseek(fp,0L,SEEK_END);
+		size = ftell(fp);
+		fseek(fp,0L,0);
+		buffer = (char*)malloc((size)*sizeof(char)+1);
+		fread(buffer,size,1,fp);
+		fclose(fp);
+		return buffer;
 	}
-	fseek(fp,0L,SEEK_END);
-	size = ftell(fp);
-	fseek(fp,0L,0);
-	buffer = (char*)malloc((size)*sizeof(char)+1);
-	fread(buffer,size,1,fp);
-	fclose(fp);
+
+	while( !feof(fp)){
+		int read = 0;
+		size += STDIN_BUF_INC;
+		buffer = (char*) realloc((void*) buffer, STDIN_BUF_INC);
+		read = fread(buffer+read_size, 1, STDIN_BUF_INC, fp);
+		read_size += read;
+		buffer[read_size] = 0;
+	}
+
 	return buffer;
 }
 
