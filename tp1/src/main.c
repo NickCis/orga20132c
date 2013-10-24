@@ -47,7 +47,6 @@ int main(int argc, char* argv[]){
 		return 1;
 	}
 
-	printf("argc %d\n", argc);
 	if (argc > 2){
 		int i;
 		for ( i=2 ; i<argc ; i++)
