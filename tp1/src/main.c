@@ -23,6 +23,7 @@ int main(int argc, char* argv[]){
 	char *output = NULL;
 	int* res = NULL;
 	int modo = 0;
+
 	/* Creo el parseador de argumentos */
 	args = ParseArg_new(4);
 	/* Agrego los argumentos a parsear, si uso valores por defecto como NULL con tama~no 0, */
@@ -41,16 +42,21 @@ int main(int argc, char* argv[]){
 		modo=HEAP;
 	}
 
-	if (modo > 0){
-		if (argc > 2){
-			int i;
-			for ( i=2 ; i<argc ; i++)
-				ordenarArchivo(argv[i],modo);
-		}else if (argc == 2){
-			ordenarArchivo("",modo);
-		}else{
-			fprintf(stderr,"Vea la ayuda para ver como ejecutar el programa\n");
-		}
+	if(modo == 0){
+		fprintf(stderr,"Vea la ayuda para ver como ejecutar el programa\n");
+		return 1;
+	}
+
+	printf("argc %d\n", argc);
+	if (argc > 2){
+		int i;
+		for ( i=2 ; i<argc ; i++)
+			ordenarArchivo(argv[i],modo);
+	}else if (argc == 2){
+		ordenarArchivo(NULL, modo);
+	}else{
+		fprintf(stderr,"Vea la ayuda para ver como ejecutar el programa\n");
+		return 1;
 	}
 
 	if(ParseArg_getArg(args, 'h')){
@@ -73,7 +79,7 @@ int main(int argc, char* argv[]){
 }
 
 void version(char* nombre){
-	printf("%s 1.0.0\n", nombre);
+	fprintf(stderr, "%s 1.0.0\n", nombre);
 }
 
 void usage(char* nombre){
@@ -109,10 +115,11 @@ char* getData(char* nombreArchivo){
 	char* buffer;
 	int size;
 	FILE *fp = stdin;
-	if (strcmp(nombreArchivo,"")!=0){
-		if ( !(fp = fopen(nombreArchivo,"r")) )
+	if(nombreArchivo){
+		if ( !(fp = fopen(nombreArchivo,"r")) ){
 			fprintf(stderr,"No se puede abrir el archivo %s\n",nombreArchivo);
-		exit (1);
+			exit (1);
+		}
 	}
 	fseek(fp,0L,SEEK_END);
 	size = ftell(fp);
