@@ -38,7 +38,8 @@ $(target): arg_parse.o bubblesort.o heapsort.o main.o
 	$(LD) arg_parse.o bubblesort.o heapsort.o main.o $(LOADLIBS) $(LDLIBS) -o $(target)
 
 clean:
-	$(RM) *.o $(target)
+	#$(RM) *.o $(target)
+	rm -rf *.o $(target)
 
 assembly: arg_parse.o bubblesort.o main.o
 	gcc -c assembly/heapify.S -o heapify.o
