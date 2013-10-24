@@ -2,9 +2,8 @@
 #define __BUBBLESORT_H__
 
 #include <stdio.h>
+#include <strings.h>
 
-typedef int (*TCompareFunction)(void*, void*);
-
-void bubblesort(void** array, size_t size, TCompareFunction cmp);
+void bubblesort(char** words,int size);
 
 #endif

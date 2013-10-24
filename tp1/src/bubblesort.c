@@ -1,14 +1,15 @@
 #include "bubblesort.h"
 
-void bubblesort(void** array, size_t size, TCompareFunction cmp){
+void bubblesort(char** word, int size){
 	int i,j;
-	void* tmp;
+	char* tmp;
+	printf("BUBUEEE");
 	for (i = 0 ; i < size; i++){
 		for (j = i+1 ; j < size; j++){
-			if (cmp(*(array+i), *(array+j)) < 0){
-				tmp = *(array+i);
-				*(array+i) = *(array+j);
-				*(array+j) = tmp;
+			if (strcasecmp(*(word+i), *(word+j)) > 0){
+				tmp = *(word+i);
+				*(word+i) = *(word+j);
+				*(word+j) = tmp;
 			}
 		}
 	}

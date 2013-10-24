@@ -1,24 +1,24 @@
 #include "heapsort.h"
 
-void heapify(void** array, size_t size, TCompareFunction cmp, int dsd);
+void heapify(char** array, int size, int dsd);
 
-void heapsort(void** array, size_t size, TCompareFunction cmp){
+void heapsort(char** array, int size){
 	int i=0;
 
 	for(i=0; i<size; i++){
-		heapify(array, size, cmp, i);
+		heapify(array, size, i);
 	}
 }
 
-void heapify(void** array, size_t size, TCompareFunction cmp, int dsd){
+void heapify(char** array, int size, int dsd){
 	int i=0;
 
 	for(i=dsd; i < size; i++){
 		int parent = ( ( i- dsd -1)/2) + dsd;
 		int j = i;
 
-		while(parent >= dsd && cmp(*(array+parent), *(array+j)) < 0){
-			void* aux = *(array+parent);
+		while(parent >= dsd && strcasecmp(*(array+parent), *(array+j)) > 0){
+			char* aux = *(array+parent);
 			*(array+parent) = *(array+j);
 			*(array+j) = aux;
 
