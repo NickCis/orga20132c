@@ -1,0 +1,232 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage[spanish,activeacute]{babel}
+\usepackage{footnote}
+
+% Paquetes para manejar lenguajes
+\usepackage{listings,multicol}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%DECLARACIONES%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstdefinestyle{BashInputStyle}{
+  language=bash,
+  basicstyle=\small\sffamily,
+  numbers=left,
+  numberstyle=\tiny,
+  numbersep=3pt,
+%    frame=tb, %DESCOMENTAR PARA PONERLE LINEAS ARRIBA Y ABAJO
+  columns=fullflexible,
+  linewidth=0.9\linewidth,
+  xleftmargin=0.1\linewidth
+}% \end{lstlisting}
+
+
+% Titulo del Trabajo Practico.
+\title{ Trabajo Pr\'actico 1   \\
+        \Large{ 66.20 Organizaci\'on de Computadoras } }
+
+
+% Informaci\'on sobre los autores.
+\author{Nicol\'as Calvo, \textit{Padr\'on Nro. 78.914}           	\\
+            \texttt{ nicolas.g.calvo@gmail.com }      			\\
+            Nicol\'as Cisco, \textit{Padr\'on Nro.  94.173}              	\\
+            \texttt{ n.cis\_92@hotmail.com }                             \\
+           Rodrigo Burdet, \textit{Padr\'on Nro. 93.440}                \\
+            \texttt{ rodrigoburdet@gmail.com }                     		\\
+             \LARGE{}         						\\
+            \LARGE{}         						\\
+            \LARGE{}         						\\
+            \Large{2do. Cuatrimestre de 2013}         	\\                       
+            \texttt{}         						\\
+            \Large{Facultad de Ingenier\'\i{}a, Universidad de Buenos Aires}            \\
+       }
+\date{}
+
+
+\begin{document}
+
+\begin{figure}
+\centering
+\includegraphics[width=100pt]{logofiuba.jpg}
+\end{figure}
+
+
+\maketitle
+\thispagestyle{empty}   % quita el numero en la primer pagina
+%\renewcommand{\labelenumi}{\alph{enumi}.}
+\begin{abstract}
+En el presente se comparan dos algoritmos de ordenamiento: \textit{Bubblesort}\cite{Bubblesort} vs \textit{Heapsort}\cite{Heapsort}. Bubblesort fue solo implementado en C mientras que Heapsort fue hecho en MIPS32 y en C. El par'ametro de comparaci'on es el tiempo de ordenamiento de archivos de texto. 
+Todos los archivos y códigos fuente aquí mencionados, así como también el presente informe, pueden ser descargados del repositorio de trabajo \footnote{URL del Repositorio: \url{https://github.com/NickCis/orga20132c/tree/master/tp1}}.
+\bigskip
+\end{abstract}
+\newpage
+
+\section{Introducción}
+El ordenamiento por montículos (heapsort en inglés) es un algoritmo de ordenamiento no recursivo, no estable, con complejidad computacional $\Theta(n\log n)$. Este algoritmo consiste en almacenar todos los elementos del vector a ordenar en un montículo (heap), y luego extraer el nodo que queda como nodo raíz del montículo (cima) en sucesivas iteraciones obteniendo el conjunto ordenado. Basa su funcionamiento en una propiedad de los montículos, por la cual, la cima contiene siempre el menor elemento (o el mayor, según se haya definido el montículo) de todos los almacenados en él.
+La Ordenación de burbuja (Bubble Sort en inglés) es un sencillo algoritmo de ordenamiento. Funciona revisando cada elemento de la lista que va a ser ordenada con el siguiente, intercambiándolos de posición si están en el orden equivocado. Es necesario revisar varias veces toda la lista hasta que no se necesiten más intercambios, lo cual significa que la lista está ordenada. Este algoritmo obtiene su nombre de la forma con la que suben por la lista los elementos durante los intercambios, como si fueran pequeñas "burbujas". También es conocido como el método del intercambio directo. Dado que solo usa comparaciones para operar elementos, se lo considera un algoritmo de comparación, siendo el más sencillo de implementar.
+Éste algoritmo es esencialmente un algoritmo de fuerza bruta lógica siendo su complejidad algor'imica de $\Theta(n^2)$.
+
+\section{Objetivos}
+En el presente trabajo pr\'actico se debe desarrollar una aplicaci\'on que implementa los algoritmos de ordenamiento Bubblesort y Heapsort en el lenguaje programaci\'on C y, en particular, el algoritmo Heapsort en assembler de arquitectura MIPS 32. Luego, utilizando dicha aplicaci\'on se debe ordenar  una serie de archivos a fin de medir el tiempo de ejecuci\'on que insume.\\
+Se calcul\'o el  speedup al reemplazar el  algoritmo Bubblesort por el algoritmo Heapsort como as\'i tambi\'en al sustituir la versi\'on del algoritmo de Heapsort implementado en C por el algoritmo implementado en assembler.\\
+Con todo esto, lo que se busca es: \\
+- Familiarizarse con la arquitectura MIPS 32 y su lenguaje ensamblador.\\
+- Comparar el rendimiento de los distintos algoritmos de ordenamiento.\\
+- Para Heapsort, comparar el rendimiento entre la versi\'on codificada en lenguaje C y la codificada en lenguaje assembler.
+
+\section{Compilaci'on}
+Para compilar el programa se uso un \textit{make} que ser'a presentado en el ap'endice para automatizar el proceso. Se opt'o por usar el standard 99 \textit{std99}\cite{std99} trantando a los warnings como errores y sin usar optimizaciones {\bf -O0}.
+A saber: 
+\begin{itemize}
+ \item Antes de cada ejecuci'on hacer : {\bf make clean}
+ \item Para compilar el c'odigo assembly se puede hacer: {\bf make assembly}
+ \item Para compilar el codigo en C se puede hacer: {\bf make}
+\end{itemize}
+
+
+\section{Programa}
+El programa consta de 3 secciones:
+\begin{itemize}
+ \item Parser de argumentos (TDA)
+ \item M'etodos de ordenamiento
+ \begin{itemize}
+  \item Bubblesort
+  \item Heapsort
+ \end{itemize}
+ \item Main
+\end{itemize}
+
+Cada una de ellas sera explicada a continuaci'on:
+
+\subsection{Parser}
+Para crear el TDA parseador de argumentos se le pasa la cantidad m'axima de argumentos que el programa puede llegar a recibir, internamente se guarda un vector de estructuras \emph{TArg}. Cada uno de estos \emph{TArg} es un posible argumento, esta estructura guarda una funci'on parseadora de char* provenientes de argv a un valor, un char representando el nombre corto (e.g: o de -o), un char* representando el nombre largo (e.g: output de --output), un void* representando un puntero a un valor por defecto, y dos valores que se asignan despu'es de parsear argv (si es que se realiza alg'un match), un entero para saber si se encontr'o el valor y otro char* correspondiente al string del argv que se us'o como argumento (e.g: -o output.pgm, se guardar'a output.pgm).
+En el .h se describe que hacen las primitivas, a modo de resumen, se carga el array de argumentos usando \textit{ParseArg\_addArg}. Despues, se llama a \textit{ParseArg\_parse(argc, argv)} que recorre el vector argv buscando los par'ametros. Para obtener el valor de un argumento, se llama a \textit{ParseArg\_getArg(nombre\_corto)} siendo nombre corto  un char, esto devuelve un puntero al dato o null, internamente, se busc'o en el vector de \textit{TArg} aquel con nombre corto igual al pasado por argumento .Si \textit{arg $\rightarrow$ encontre == 0}, se devuelve el valor por defecto, sino, si \textit{arg $\rightarrow$ func == NULL} se devuelve un 1 casteado a void*, si \textit{arg $\rightarrow$buf == NULL} se devuelve NULL, sino, se devuelve \textit{arg $\rightarrow$func(arg$\rightarrow$buf)} (buf siempre es una cadena de caracteres finalizada en 0).
+
+\subsection{Main}
+El main consta de todas las funciones auxiliares que son necesarias para los ordenadores. Estos necesitan una lista de palabras que ser'an provistas por \textit{fillWords}. A su vez, esta, necesita todas las palabras del archivo en un solo buffer, tarea de \textit{getData}.
+
+\subsection{M'etodos de ordenamiento}
+
+\subsection{Bubblesort}
+La llamada al m'etodo 
+\begin{lstlisting}[style=BashInputStyle]
+    void bubbleasort(char ** words, int size)
+\end{lstlisting}
+Genera un ordenamiento b'asico de bubblesort de forma ascendente.
+
+\subsection{Heapsort}
+La llamada al m'etodo 
+\begin{lstlisting}[style=BashInputStyle]
+    void heapsort(char ** words, int size)
+\end{lstlisting}
+Genera un ordenamiento de heapesort de forma ascendente.
+
+\newpage
+
+
+%\section{Funci\'on Heapsort Assembler - Stack Frame}
+
+%A continuaci\'on se muestra como es el stack frame para la funci\'on, respetando la ABI de la c\'atedra.
+
+%\begin{table}[h]
+%\begin{tabular}{|c|p{2.75in}|} \hline
+%Contenido & Comentario \\ \hline
+%array size & \\ \hline
+%Words & Stack del caller\\ \hline
+%$<$padding$>$ & \\ \hline
+%RA & SRA\\ \hline
+%FP & \\ \hline
+%GP & \\ \hline
+%Temp & LTA\\ \hline
+%Increment & \\ \hline
+%j & \\ \hline
+%i & \\ \hline
+%a3 & ABA\\ \hline
+%a2 & \\ \hline
+%a1 & \\ \hline
+%a0 & \\ \hline
+
+%\end{tabular}
+%\end{table}
+
+%\newpage
+
+%\subsection{Compilaci\'on}
+%Luego de generar el codigo compilamos en el sistema operativo simulado con la siguiente linea:\\
+
+%	gcc -Wall -lm -O0 -o tp1 tp1.c
+
+%\begin{itemize}
+%\item	Wall: activa todos los mensajes de warning.
+
+%\item	O: indica el nivel de optimizacion, en este caso no queremos que el compilador optimice el programa por lo que ponemos nivel 0.
+
+%\item	o: genera el archivo de salida.
+
+%\end{itemize}
+
+%Habiendo generado el ejecutable procedemos a realizar corridas de prueba. \\
+
+%\newpage
+
+
+\section{Mediciones}
+
+Para tomar el tiempo de ejecuci\'on del programa, se utiliz\'o el comando time\textit{TIME}\cite{TIME} del sistema. 
+	El comando time (del inglés time		, tiempo) es un comando del sistema operativo Unix y derivados. Se utiliza para determinar la duración de ejecución de un determinado comando o proceso. Para utilizar el comando, simplemente hay anteponer la palabra time a lo que se quiere ejecutar. Al ejecutar el comando, time informará de cuanto tiempo llevó ejecutar el proceso en términos de tiempo de CPU de usuario, tiempo de CPU del sistema y tiempo real. El tiempo que hemos tomado es el de usuario ya que contempla solo el tiempo usado por el programa. En caso del tiempo de sistema, contempla los llamados al sistema. Para el caso del tiempo real, se refiere al tiempo transcurrido como si fuese un cronómetro.
+
+Los siguientes gr\'aficos muestran el tiempo de ejecuci\'on con los distintos algoritmos y en base al tama\'no del archivo a ordenar.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=400pt]{tiempos.jpg}
+\caption{Tiempo de ejecuci\'on de los algoritmos.}
+\end{figure}
+
+\subsection {An\'alisis de los resultados}
+
+A continuaci\'on se expone una tabla con los valores obtenidos de las mediciones medidas en segundos:
+
+\begin{table}[h]
+\begin{tabular}{|c|c|c|c|} \hline
+Archivo a ordenar & Heapsort C & Heapsort assembler & Bublesort \\ \hline
+25demayo.txt & 1136,82 & 1126,31 & 3456,84\\ \hline
+cookbokk.txt & 159,49 & 158,88 & 131,12\\ \hline
+\end{tabular}
+\end{table}
+
+Para calcular el speedup, se utiliza la f\'ormula de tiempo viejo sobre tiempo nuevo. \\
+En base a esta f\'ormula, se obtuvieron los siguientes resultados:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=400pt]{speedup.JPG}
+\end{figure}
+
+
+\section{C\'odigo}
+
+El c\'odigo se encuentra adjunto en el disco, tanto su versi\'on en C como en MIPS.
+
+
+\newpage
+
+\section{Conclusi\'on}
+El speedup reflejan cual de todos los algoritmos es mejor. En este caso, se ve reflejado como el Heapsort supera en desempe\'no al BubbleSort.\\
+Para el caso de la versi\'on de assembler diera mejores resultados que la versi\'on realizada en c\'odigo C, por tratarse de un dise\'no a m\'as bajo nivel. Como pudo apreciarse en los resultados, los tiempos no fueron los esperados dando tiempos muy cercanos entre ambas versiones. Con lo que podr\'iamos concluir, que no es conveniente invertir tanto tiempo en desarrollar c\'odigo a bajo nivel. El c\'odigo en lenguajes a alto nivel es mucho m\'as f\'acil de desarrollar, mantener y detectar posibles fallos.
+
+\newpage
+\begin{thebibliography}{5}
+\bibitem{Bubblesort} Bubble sort. \url{http://en.wikipedia.org/wiki/Bubble_sort}
+\bibitem{Heapsort} Heap sort \url{http://es.wikipedia.org/wiki/Heapsort}
+\bibitem{TIME} time man page, \url{http://www.linuxmanpages.com/man1/time.1.php}
+\end{thebibliography}
+
+
+\end{document}
+

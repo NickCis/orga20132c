@@ -11,6 +11,8 @@
 #define STDIN_BUF_INC 512
 #define BUBBLE 1
 #define HEAP 2
+#define HELP 3
+#define VERSION 4
 
 void usage(char* nombre);
 void version(char* nombre);
@@ -35,26 +37,20 @@ int main(int argc, char* argv[]){
 	ParseArg_addArg(args, NULL, 'H', "heap", NULL, 0);
 	ParseArg_parse(args, argc, argv);
 	
-	/*Si tengo mas de 3 parametros es porque paso una lista de archivos */
 	if (ParseArg_getArg(args, 'B')){
 		modo=BUBBLE;
 	}
 	if (ParseArg_getArg(args, 'H')){
 		modo=HEAP;
 	}
-
-	if(modo == 0){
-		fprintf(stderr,"Vea la ayuda para ver como ejecutar el programa\n");
-		return 1;
+	if (ParseArg_getArg(args, 'h')){
+		modo=HELP;
+	}
+	if (ParseArg_getArg(args, 'V')){
+		modo=VERSION;
 	}
 
-	if (argc > 2){
-		int i;
-		for ( i=2 ; i<argc ; i++)
-			ordenarArchivo(argv[i],modo);
-	}else if (argc == 2){
-		ordenarArchivo(NULL, modo);
-	}else{
+	if(modo == 0){
 		fprintf(stderr,"Vea la ayuda para ver como ejecutar el programa\n");
 		return 1;
 	}
@@ -69,6 +65,17 @@ int main(int argc, char* argv[]){
 		version(argv[0]);
 		ParseArg_delete(args);
 		return 0;
+	}
+
+	if (argc > 2){
+		int i;
+		for ( i=2 ; i<argc ; i++)
+			ordenarArchivo(argv[i],modo);
+	}else if (argc == 2){
+		ordenarArchivo(NULL, modo);
+	}else{
+		fprintf(stderr,"Vea la ayuda para ver como ejecutar el programa\n");
+		return 1;
 	}
 
 	free(res);
@@ -133,7 +140,7 @@ char* getData(char* nombreArchivo){
 	while( !feof(fp)){
 		int read = 0;
 		size += STDIN_BUF_INC;
-		buffer = (char*) realloc((void*) buffer, STDIN_BUF_INC);
+		buffer = (char*) realloc((void*) buffer, size);
 		read = fread(buffer+read_size, 1, STDIN_BUF_INC, fp);
 		read_size += read;
 		buffer[read_size] = 0;
